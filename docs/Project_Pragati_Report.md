@@ -143,14 +143,14 @@ We calculate the **90th Percentile** of volume over the last year to determine t
 *   **Design**: Uses a "Traffic Light" system overlaid on the India Map.
 *   **Function**: Allows an administrator to instantly spot "Red Clusters" (failed districts) amidst "Green Zones".
 
-{yaha image add karna hai, map ki}
+
 ## 2. Trend Velocity Chart
 **Format**: Time-Series Line Graph with a "Safe Band".
 *   **Green Band**: Represents the `Median ± Margin`.
 *   **Dashed Line**: The Center's historical baseline.
 *   **Solid Line**: Actual Volume.
 *   *Effectiveness*: Administrators can visually verify *why* a center was flagged (e.g., observing the line plunge below the green band).
-{yaha image add karna hai, graph ki}
+
 ---
 
 # IMPLEMENTATION & PROOF OF WORK
@@ -193,8 +193,8 @@ def analyze_pincode(history):
 *   *Figure 2: The Logic Engine flagging a "Critical" drop in volume.*
 
 ## Access Live Prototype
-*   **Live Dashboard**: [Paste Cloudflare Link Here]
-*   **Source Code Repository**: [Paste GitHub Link Here]*
+*   **Live Dashboard**: [project-pragati/](https://project-pragati.pages.dev/)
+*   **Source Code Repository**: [Project-Pragati](https://github.com/vikas7516/Project-Pragati)*
 
 ---
 
