@@ -1,29 +1,44 @@
-# Project Pragati 🇮🇳
-![UIDAI Logo](frontend/assets/uidai_logo.svg)
-### Predictive Lifecycle Analytics for Aadhaar Inclusion
-**UIDAI Hackathon 2026 - Team ID: UIDAI_5553**
+<h1 align="center">
+  <img src="frontend/assets/uidai_logo.svg" height="45" style="vertical-align: middle;"> Project Pragati 🇮🇳
+</h1>
+<h3 align="center">Predictive Lifecycle Analytics for Aadhaar Inclusion</h3>
+<p align="center">
+  <b>UIDAI Hackathon 2026 - Team ID: UIDAI_5553</b> <br>
+  <img src="https://img.shields.io/badge/Status-Prototype%20Complete-green">
+  <img src="https://img.shields.io/badge/Stack-Python%20|%20Pandas%20|%20JS-blue">
+</p>
 
----
+<br>
 
-### **UIDAI ID** | UIDAI_5553
-### Team
-*   **Vikas Lavaniya** (Technical Lead)
-*   **Kritika** (Analytics Lead)
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>👥 Team</h3>
+      <ul>
+        <li><b>Vikas Lavaniya</b> (Technical Lead)</li>
+        <li><b>Kritika</b> (Analytics Lead)</li>
+      </ul>
+      <b>UIDAI ID:</b> <code>UIDAI_5553</code>
+    </td>
+    <td width="50%" valign="top">
+      <h3>📊 Live Prototype</h3>
+      <a href="https://project-pragati.pages.dev" target="_blank">
+        <img src="https://img.shields.io/badge/Open_Live_Dashboard-0056D2?style=for-the-badge&logo=cloudflare&logoColor=white" height="40">
+      </a>
+      <br>
+      <i>Interactive Dashboard tracking 19,000+ Pincodes.</i>
+    </td>
+  </tr>
+</table>
 
----
-## 📊 Live Demo
-*   **Dashboard**: [Project Pragati](https://projectpragati.pages.dev)
+<br>
 
----
+## 📖 The Problem & Solution
+**The Blind Spot**: Administrators currently track "State Averages". If a state shows 80% compliance, they assume the entire region is healthy.
+**The Reality**: Inside that "healthy" state, hundreds of specific villages (pincodes) may have **collapsed completely**.
 
-![Project Status](https://img.shields.io/badge/Status-Prototype%20Complete-green)
-![Tech Stack](https://img.shields.io/badge/Stack-Python%20|%20Pandas%20|%20JS-blue)
-
-## 📖 Overview
-**Project Pragati** is a "Live Nervous System" for Aadhaar infrastructure. 
-While traditional dashboards track State-level averages, Pragati processes **19,000+ Pincodes** individually to detect "Dark Spots"—centers where mandatory biometric updates (Age 5/15) have silently collapsed. 
-
-Our goal: **Prevent citizen exclusion before it happens.**
+**Project Pragati** fixes this by ignoring the averages. 
+It tracks the **daily heartbeat of every single pincode** individually. If a center stops processing Mandatory Biometric Updates (Age 5/15), our engine flags it as **CRITICAL (Red)**—alerting the administration to surgically deploy mobile kits *before* citizens are excluded.
 
 ---
 
@@ -67,5 +82,4 @@ pip install pandas numpy
 python -m processing_engine.run_analysis
 ```
 
-
-
+---
