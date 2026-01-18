@@ -1,72 +1,88 @@
-# PROJECT PRAGATI: CORE ALGORITHMIC LOGIC
-### Technical Deep Dive for Engineering Review
-**Status**: Production | **Version**: 2.0 (Vectorized)
+# PROJECT PRAGATI: TECHNICAL DOCUMENTATION
+### System Architecture & Data Flow Reference
+**Version**: 1.0 (Production)
 
 ---
 
-## 1. The Core Philosophy: "Context-Aware Anomaly Detection"
-Traditional systems use **Static Thresholds** (e.g., "Alert if < 50").
-This fails in India because:
-*   A remote village doing 10 and dropping to 2 is a collapse (80% Loss).
-*   A metro center doing 1000 and dropping to 900 is noise.
+## 1. High-Level Architecture
+Project Pragati operates on a **Serverless, File-Based Architecture**. 
+To ensure zero deployment costs and high scalability, we pre-compute all intelligence in Python and serve a static, optimized JSON payload to the Frontend.
 
-**Project Pragati** uses **Dynamic Profiling**. 
-We build a specific "Behavioral Profile" for every single pincode based on its last 12 months of history. We then compare its *Current Performance* against its own *Data DNA*.
-
----
-
-## 2. The Data Structure
-*   **Time Unit**: 15-Day Buckets (Period_ID).
-    *   *Why?* Daily data is too noisy. Monthly is too slow. 15-Days is the "Goldilocks Zone" for detecting attrition.
-*   **Entities**: 19,000+ Verified Pincodes.
-*   **Metrics**: Enrolment, Biometric Update, Demographic Update.
+### The Data Pipeline Flow
+```mermaid
+graph TD
+    A[Raw Daily Logs (CSVs)] -->|Ingest| B(build_master.py)
+    B -->|Aggregates| C[master_dataset.csv]
+    C -->|Feeds| D(run_analysis.py)
+    D -->|Applies Logic| E[dashboard_data.json]
+    E -->|Loads| F[Frontend (Browser)]
+```
 
 ---
 
-## 3. The Logic Engine (Python/Pandas)
+## 2. Phase 1: The ETL Pipeline (Extraction & Aggregation)
+**Goal**: Convert messy, daily transaction logs into a clean Time-Series Dataset.
 
-### A. Determining "Max Capacity"
-First, we answer: *"What is this center capable of when healthy?"*
-We calculate the **90th Percentile** of the last year's volume.
-*   `Capacity = Q_90(History_12_Months)`
-*   *Why 90th?* Max() is vulnerable to one-off camps. 90th percentile represents sustainable peak performance.
-
-### B. Determining "Normal Volatility" (Bank Fraud Logic)
-We use Inter-Quartile Range (IQR) to create a dynamic "Safe Band".
-*   `Median` = Rolling Median (6 Months)
-*   `Q1` = 25th Percentile
-*   `Q3` = 75th Percentile
-*   `IQR` = Q3 - Q1
-*   **Safe Floor** = `Q1 - (1.5 * IQR)`
-*   **Safe Ceiling** = `Q3 + (1.5 * IQR)`
+*   **Script**: `data_cleaner/build_master.py`
+*   **Input Source**: `aadhar-data/` (Folder containing raw daily CSVs).
+*   **Key Operations**:
+    1.  **Crawling**: Recursive search for `.csv` files.
+    2.  **Categorization**: Identifies file type (Enrolment, Biometric, or Demographic) based on filename patterns.
+    3.  **Normalization**: Standardizes column names (`pincode`, `date`, `count`).
+    4.  **15-Day Bucketing**: 
+        *   Raw Data is Daily.
+        *   We aggregate this into **15-Day Periods** (e.g., `2024-01-H1`, `2024-01-H2`).
+        *   *Why?* Smooths out daily noise (Sundays, holidays) to reveal true trends.
+*   **Output Artifact**: `processed/master_dataset.csv`
+    *   *Role*: The "Golden Source" for all analysis.
+    *   *Schema*: `pincode`, `period_id`, `enrolment`, `biometric`, `demographic`.
 
 ---
 
-## 4. The 5-Color Classification Matrix
-The engine runs the following Vectorized Tests on every pincode:
+## 3. Phase 2: The Intelligence Engine (Analysis)
+**Goal**: Diagnostics. Determine the "Health Status" of every pincode.
 
-| Priority | Color | Logical Condition (Simplified) | Diagnosis |
+*   **Script**: `processing_engine/run_analysis.py` (Orchestrator) & `analyzer.py` (Core Logic).
+*   **Input**: `processed/master_dataset.csv`.
+*   **Core Methodology (Vectorized)**:
+    1.  **Capacity Profiling**: calculates the **90th Percentile** volume for each pincode over the last year. This establishes the "Max Potential".
+    2.  **Volatility Analysis (IQR)**: Uses Inter-Quartile Range to determine a dynamic "Safe Band" for every specific center.
+    3.  **The 5-Color Logic**:
+        *   **CRITICAL (Red)**: Volume < 10% of Max Capacity (Collapse).
+        *   **SEVERE (Orange)**: Volume < 30% of Max Capacity (Failing).
+        *   **SHOCK (Yellow)**: Volume < Safe Floor (Statistical Anomaly).
+        *   **SURGE (Blue)**: Volume > Safe Ceiling (Overload).
+        *   **SAFE (Green)**: Within bounds.
+*   **Output Artifact**: `frontend/data/dashboard_data.json`
+    *   *Role*: The "Database" for the web app.
+    *   *Size*: ~12MB (Optimized).
+
+---
+
+## 4. Phase 3: The Frontend Architecture
+**Goal**: Zero-Latency Visualization.
+
+*   **Technology**: Vanilla JavaScript (ES6 Modules) + Chart.js.
+*   **Why No Database?** 
+    By pre-computing the JSON, we eliminate the need for a backend server (SQL/Node). The entire app runs in the user's browser, making it incredibly fast and deployable on any static host (Cloudflare/GitHub Pages).
+
+### File Structure & Logic
+1.  **`index.html`**: The skeleton. Loads modules.
+2.  **`js/main.js`**: The entry point. Triggers parallel loading of JSON and Map Data.
+3.  **`js/state.js`**: A centralized "State Store" that holds the currently filtered view.
+4.  **`js/map.js`**:
+    *   Loads `india_pincode_boundaries_simplified.geojson`.
+    *   Joins GeoJSON with `dashboard_data.json` using the Pincode as the Key.
+    *   Colors the polygons based on the `priority` field (Red/Orange/Green).
+5.  **`js/details.js`**:
+    *   Renders the "Trend Velocity" charts using the historical arrays found in the JSON.
+    *   Displays the specific "Diagnosis" text generated by the Python Engine.
+
+---
+
+## 5. Artifact Summary
+| File Name | Generated By | Consumed By | Purpose |
 | :--- | :--- | :--- | :--- |
-| **CRITICAL** | 🔴 Red | `Current < 10% of Capacity` | **COLLAPSE**. Effectively Dead. Needs immediate reset. |
-| **SEVERE** | 🟠 Orange | `Current < 30% of Capacity` | **FAILING**. Functional but severely degraded. |
-| **SHOCK** | 🟡 Yellow | `Current < Safe_Floor` | **ANOMALY**. Statistical drop below volatility range. Warning sign. |
-| **SURGE** | 🔵 Blue | `Current > Safe_Ceiling` | **OVERLOAD**. Operating beyond historical limits. Needs staff/kit reinforcement. |
-| **SAFE** | 🟢 Green | All Checks Pass | **HEALTHY**. Operating within normal bounds. |
-
----
-
-## 5. Noise & Artifact Filtering
-
-### The "Ghost Code" Filter
-*   **Problem**: Data entry errors create fake pincodes (e.g., '100000').
-*   **Solution**: `Inner Join` with Official Pincode Directory. Only valid government-recognized locations are processed.
-
-### The "Small Number" Stability
-*   **Problem**: Going from 2 -> 0 updates triggers massive % drops.
-*   **Solution**: `MIN_ACTIVITY_THRESHOLD = 10`. Below this, statistical logic is suspended to prevent false positives in dormant villages.
-
----
-
-## 6. Implementation Notes
-*   **Vectorization**: The logic uses `Pandas.groupby().rolling()` to process 15M rows in <2 seconds. No `for` loops.
-*   **Independence**: Biometric Update logic runs independently of Enrolment logic. A center can remain Green for Enrolment while turning Red for Updates.
+| `master_dataset.csv` | `build_master.py` | `run_analysis.py` | Clean Time-Series History |
+| `dashboard_data.json` | `run_analysis.py` | `frontend/js/api.js` | The "Brain" of the Dashboard |
+| `pincode-adress.csv` | Extracted from Data | `frontend` | Provides District/State names |
