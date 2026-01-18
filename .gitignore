@@ -1,0 +1,7 @@
+aadhar-data/
+__pycache__/
+*.pyc
+.env
+.DS_Store
+.agent
+nodes_modules/

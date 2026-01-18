@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Pragati | Strategic Priority Dashboard</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- HEADER -->
+    <header class="main-header">
+        <div class="header-left">
+            <img src="assets/uidai_logo.svg" alt="UIDAI Logo" class="logo">
+            <div class="header-text">
+                <h1>PROJECT PRAGATI</h1>
+                <p>Strategic Priority Engine | Aadhaar Infrastructure Analysis</p>
+            </div>
+        </div>
+        <div class="header-stats" id="header-stats">
+            <!-- Stats populated by JS -->
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="main-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>⚠️ Priority List</h2>
+            </div>
+
+            <!-- Category Toggle -->
+            <div class="category-toggle">
+                <button class="cat-btn active" data-cat="enrolment">Enrolment</button>
+                <button class="cat-btn" data-cat="biometric">Biometric</button>
+                <button class="cat-btn" data-cat="demographic">Demo</button>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <input type="text" id="pincode-search" placeholder="Search Pincode (e.g. 110001)...">
+                <button id="search-btn" aria-label="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters">
+                <select id="state-filter">
+                    <option value="all">All States</option>
+                </select>
+                <select id="priority-filter">
+                    <option value="all">All Priorities</option>
+                    <option value="3">🔴 Critical</option>
+                    <option value="2">🟠 Severe</option>
+                    <option value="1">🟡 Shock</option>
+                    <option value="4">🔵 Surge</option>
+                    <option value="0">🟢 Safe</option>
+                </select>
+            </div>
+
+            <!-- Pincode List -->
+            <ul class="pincode-list" id="pincode-list">
+                <!-- Populated by JS -->
+            </ul>
+        </aside>
+
+        <!-- MAP AREA -->
+        <main class="map-container">
+            <div id="map"></div>
+
+            <!-- DETAIL PANEL (Hidden by default) -->
+            <div class="detail-panel" id="detail-panel">
+                <button class="close-btn" id="close-detail">&times;</button>
+
+                <!-- Left Col: Info -->
+                <div class="detail-info">
+                    <div class="detail-header">
+                        <h3 id="detail-title">--</h3>
+                        <div class="detail-subtitle" id="detail-subtitle">--</div>
+                        <span class="priority-badge" id="detail-badge">--</span>
+                    </div>
+
+                    <div class="detail-metrics">
+                        <div class="metric">
+                            <span class="metric-label">Avg Volume</span>
+                            <span class="metric-value" id="metric-vol">--</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Latest Vol</span>
+                            <span class="metric-value" id="metric-latest">--</span>
+                        </div>
+                    </div>
+
+                    <div class="anomaly-flags" id="anomaly-flags">
+                        <!-- Flags -->
+                    </div>
+                </div>
+
+                <!-- Right Col: Graph -->
+                <div class="detail-graph-area">
+                    <div class="chart-container">
+                        <canvas id="trend-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- App JS -->
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>
